@@ -35,18 +35,18 @@ Readonly my $VALIDATE_COMMAND_OPTIONS => sub {
   );
 };
 
-my %GETOPT_ARGS = (
+my %COMMAND_LINE_OPTIONS = (
   cl_option         => undef,
   cl_option_default => 'bar',
 );
 
 GetOptions(
-  'cl_option=s'         => \$GETOPT_ARGS{'cl_option'},
-  'cl_option_default=s' => \$GETOPT_ARGS{'cl_option_default'},
+  'cl_option=s'         => \$COMMAND_LINE_OPTIONS{'cl_option'},
+  'cl_option_default=s' => \$COMMAND_LINE_OPTIONS{'cl_option_default'},
   'help|?'              => sub { _usage() },
 ) || _usage(1);
 
-my %ARGS = $VALIDATE_COMMAND_OPTIONS->(%GETOPT_ARGS);
+my %ARGS = $VALIDATE_COMMAND_OPTIONS->(%COMMAND_LINE_OPTIONS);
 
 sub _usage {
   my $exit_val = shift;
