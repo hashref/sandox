@@ -1,0 +1,70 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use Readonly;
+use File::Basename qw( basename );
+use Params::Validate qw(:all);
+use Getopt::Long;
+
+Readonly my $VALIDATE_COMMAND_OPTIONS => sub {
+  return validate_with(
+    params => \@_,
+    spec   => {
+      cl_option => {
+        type    => SCALAR,
+        untaint => 1
+      },
+      cl_option_default => {
+        type    => SCALAR | UNDEF,
+        untaint => 1
+      }
+    },
+    on_fail => sub {
+      my $error_message = $_[0];
+
+      # This is a total hack in lieu of some other solution.
+      # Basically, it removes the class string from the
+      # confess() call so it doesn't confuse the user.
+      $error_message =~ s/to main::__ANON__ //;
+      print "[ERROR] " . $error_message . "\n";
+
+      _usage(1);
+    }
+  );
+};
+
+my %GETOPT_ARGS = (
+  cl_option         => undef,
+  cl_option_default => 'bar',
+);
+
+GetOptions(
+  'cl_option=s'         => \$GETOPT_ARGS{'cl_option'},
+  'cl_option_default=s' => \$GETOPT_ARGS{'cl_option_default'},
+  'help|?'              => sub { _usage() },
+) || _usage(1);
+
+my %ARGS = $VALIDATE_COMMAND_OPTIONS->(%GETOPT_ARGS);
+
+sub _usage {
+  my $exit_val = shift;
+
+  $exit_val //= 0;
+
+  my $exe_name = basename $0;
+
+  print <<~ "EOF";
+  $exe_name --cl_option=<OPTION_DESC> [ --cl_option_default=<OPTION_DESC> ]
+
+    --cl_option            required command line option
+    --cl_option_default    command line option with default (default: 'foobar')
+    --help|-h|-?           help documentation
+
+  SCRIPT_DESCRIPTION_HERE
+
+  EOF
+
+  exit $exit_val;
+}
