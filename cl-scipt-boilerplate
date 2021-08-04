@@ -5,8 +5,9 @@ use warnings;
 
 use Readonly;
 use File::Basename qw( basename );
+use Types::Standard qw();
 use Params::Validate qw(:all);
-use Getopt::Long;
+use Getopt::Long ();
 
 Readonly my $VALIDATE_COMMAND_OPTIONS => sub {
   return validate_with(
@@ -40,7 +41,7 @@ my %COMMAND_LINE_OPTIONS = (
   cl_option_default => 'bar',
 );
 
-GetOptions(
+Getopt::Long::GetOptions(
   'cl_option=s'         => \$COMMAND_LINE_OPTIONS{'cl_option'},
   'cl_option_default=s' => \$COMMAND_LINE_OPTIONS{'cl_option_default'},
   'help|?'              => sub { _usage() },
